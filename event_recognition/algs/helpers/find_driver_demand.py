@@ -21,8 +21,8 @@ class DriverDemand:
         """
         
         Args:
-            end_type: 
-            time_type: 
+            end_type:  = find either the first or last driver demand
+            time_type:  = find either the start time or the end time of the change
             time_brake: 
             data_brake: 
             brake_status: 
@@ -37,45 +37,47 @@ class DriverDemand:
 
         """""
 
-        # Brake conditions
-        Tbrake = DriverDemand.find_status_time('Brake', time_type, time_brake, data_brake, brake_status, time_start,
-                                               t_seat_rail_acc_filter, seat_rail_acc_filter)
-        # Pedal conditions
-        Tpedal = DriverDemand.find_status_time('Pedal', time_type, time_acc, data_acc, acc_status, time_start,
-                                               t_seat_rail_acc_filter, seat_rail_acc_filter)
+        # Brake pedal conditions
+        time_of_threshold_brake = DriverDemand.find_status_time('Brake', time_type, time_brake, data_brake,
+                                                                brake_status, time_start,
+                                                                t_seat_rail_acc_filter, seat_rail_acc_filter)
+        # Accelerator pedal conditions
+        time_of_threshold_acc = DriverDemand.find_status_time('Pedal', time_type, time_acc, data_acc, acc_status,
+                                                              time_start,
+                                                              t_seat_rail_acc_filter, seat_rail_acc_filter)
 
         # No conditions
-        if Tbrake is None and Tpedal is None:
+        if time_of_threshold_brake is None and time_of_threshold_acc is None:
             return None, None, None
 
         # Both conditions
-        if Tbrake is not None and Tpedal is not None:
+        if time_of_threshold_brake is not None and time_of_threshold_acc is not None:
             if end_type == 'Last':
                 # Use the last action
-                if Tbrake > Tpedal:
+                if time_of_threshold_brake > time_of_threshold_acc:
                     type_ = 'Brake'
                 else:
                     type_ = 'Pedal'
             elif end_type == 'First':
                 # Use the first action
-                if Tbrake < Tpedal:
+                if time_of_threshold_brake < time_of_threshold_acc:
                     type_ = 'Brake'
                 else:
                     type_ = 'Pedal'
 
         # Brake only
-        if Tbrake is not None and Tpedal is None:
+        if time_of_threshold_brake is not None and time_of_threshold_acc is None:
             type_ = 'Brake'
 
         # Pedal only
-        if Tbrake is None and Tpedal is not None:
+        if time_of_threshold_brake is None and time_of_threshold_acc is not None:
             type_ = 'Pedal'
 
         if type_ == 'Brake':
-            t = Tbrake
+            t = time_of_threshold_brake
             status = brake_status
         elif type_ == 'Pedal':
-            t = Tpedal
+            t = time_of_threshold_acc
             status = acc_status
 
         return t, type_, status
@@ -109,36 +111,37 @@ class DriverDemand:
             return None
 
         # Find when tolerance is met
-
         if pedal_status in ['Zero Step In', 'Applying']:
+            # Increase from zero
             if time_type == 'End':
-                # p = find(time_pedal >= time_start and data_pedal >= tolerance, 1, 'first')
-                bool_time_pedal = time_pedal >= time_start
-                bool_data_pedal = data_pedal >= tolerance
-                bool_time_data = np.logical_and(bool_time_pedal, bool_data_pedal)
-
+                bool_time_data = np.logical_and(time_pedal >= time_start, data_pedal >= tolerance)
                 p = bool_time_data[bool_time_data == True].first_valid_index()
-                if p is None:
-                    return None
+            elif time_type == 'Start':
+                p = DriverDemand.find_delta_time('Max', time_pedal, data_pedal, time_start, 0.5)
+
+        elif pedal_status in ['Step In', 'Increasing']:
+            # Increase from above zero
+            if time_type == 'End':
+                p = None
             elif time_type == 'Start':
                 p = DriverDemand.find_delta_time('Max', time_pedal, data_pedal, time_start, 0.5)
 
         elif pedal_status in ['Lift Off', 'Releasing']:
+            # Reduction to zero
             if time_type == 'End':
                 if pedal_type == 'Brake':
+                    # developer note: ToDo
+                    # Confused with 'helpers.sqt.timeEqual()' method
+                    # The below statements are ot clear, the returned parameter are hard coded to zero
+                    # I need some support on this
+
                     # Get seat rail accel at start of event
-                    accel_T0 = 0
                     # accel_T0 = seatRailAccelFilter(helpers.sqt.timeEqual(tSeatRailAccelFilter,T0));
-
-                    # findBrakeRelease
+                    accel_T0 = 0
                     T0 = 0
-                    bool_time_pedal = time_pedal >= time_start
-                    bool_data_pedal = (seat_rail_acc_filter - accel_T0) >= tolerance
-                    bool_time_data = np.logical_and(bool_time_pedal, bool_data_pedal)
-
+                    # findBrakeRelease
+                    bool_time_data = np.logical_and(time_pedal >= T0, (seat_rail_acc_filter - accel_T0) >= tolerance)
                     p = bool_time_data[bool_time_data == True].first_valid_index()
-                    if p is None:
-                        return None
 
                 elif pedal_type == 'Pedal':
                     bool_time_pedal = time_pedal >= time_start
@@ -146,8 +149,6 @@ class DriverDemand:
                     bool_time_data = np.logical_and(bool_time_pedal, bool_data_pedal)
 
                     p = bool_time_data[bool_time_data == True].first_valid_index()
-                    if p is None:
-                        return None
 
             elif time_type == 'Start':
                 p = DriverDemand.find_delta_time('Min', time_pedal, data_pedal, time_start, 0.5)
@@ -173,11 +174,13 @@ class DriverDemand:
     def find_delta_time(type_: str, time_pedal: pd.Series,
                         data_pedal: pd.Series, time_start: float, tolerance: float) -> Optional[int]:
 
+        # 1. get the events greater than or equal to given time start
         bool_evt = time_pedal >= time_start
 
         if bool_evt.any() == False:
             return None
 
+        # 1. take only the events and data greater than or equal to given time start
         data_evt = data_pedal.loc[bool_evt]
         time_evt = time_pedal.loc[bool_evt]
 
@@ -202,7 +205,6 @@ class DriverDemand:
             peak = delta_data_valid.max()
 
         kPeak = delta_data_valid[delta_data_valid == peak].index[0]
-        # kPeak = delta_data_valid.loc[kPeak]
 
         # Time of the min/max
         tPeak = time_valid[kPeak]
@@ -210,6 +212,7 @@ class DriverDemand:
         # Delta tolerance to search for
         limit = peak * tolerance
 
+        # Find the position
         bool_time_valid = time_valid < tPeak
         if type_ == 'Min':
             bool_delta_data_valid = delta_data_valid >= limit
@@ -225,7 +228,7 @@ class DriverDemand:
         # Get the time from the filtered data
         t = time_valid.loc[k]
 
-        # Find the postion in the original time series
+        # Find the position in the original time series
         bool_time_pedal = time_pedal >= t
         p = bool_time_pedal[bool_time_pedal == True].last_valid_index()
 

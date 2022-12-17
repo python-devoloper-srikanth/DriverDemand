@@ -1,9 +1,10 @@
 # in built modules
 import json
 import os
+from typing import Dict, Optional
 
 
-def read_json(file_path: str) -> dict:
+def read_json(file_path: str) -> Optional[Dict]:
     """
     Args:
         file_path:

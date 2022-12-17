@@ -17,7 +17,7 @@ def driver_demand_for_acc_brake_pedals() -> Tuple[Optional[float], Optional[str]
     # Navigate to the i/o file - 'get_driver_demand.json'
     driver_demand_file_path = os.path.join(get_input_data_directory_path(), 'get_driver_demand.json')
 
-    # get the data from json as dictionery
+    # get the data from json as dictionary
     json_data_dict = read_json(driver_demand_file_path)
 
     # set the data to the variable

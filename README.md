@@ -16,7 +16,8 @@ i.e., return a list of events where the brake pedal was 'Zero' and the driver 'L
       4. Used **mypy** package to check the static typing in the code
    3. Producing same results - Not done
 2. Recreate the module structure so the name spacing in the provided Python scripts matches - Done
-3. 
+
+I prepared some input data for testing, please ignore if that is not a correct input
 
 •	
 o	analysis.py -> event_recognition.config.analysis
