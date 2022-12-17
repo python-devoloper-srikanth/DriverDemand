@@ -1,0 +1,11 @@
+mypy==0.991
+mypy-extensions==0.4.3
+numpy==1.23.5
+pandas==1.5.2
+pandas-stubs==1.5.2.221213
+python-dateutil==2.8.2
+pytz==2022.6
+six==1.16.0
+tomli==2.0.1
+types-pytz==2022.6.0.1
+typing-extensions==4.4.0
