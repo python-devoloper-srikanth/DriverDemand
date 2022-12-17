@@ -40,17 +40,21 @@ i.e., return a list of events where the brake pedal was 'Zero' and the driver 'L
 # **Challenges in understanding matlab script**
 
 1. Confused with 'helpers.sqt.timeEqual()' method (line number 130 in matlab script and line number 139 in python script (find_driver_demand.py))
-   The below statements are not clear for me, for time being the returned parameter are hard coded to zero
-   accel_T0 = seatRailAccelFilter(helpers.sqt.timeEqual(tSeatRailAccelFilter,T0));
+
+2. The below statements are not clear to me
+   
+       accel_T0 = seatRailAccelFilter(helpers.sqt.timeEqual(tSeatRailAccelFilter,T0));
    T0 definition is not there, so I hard coded those to zeros
-   I am not sure, my understanding may be wrong, so I need some guidance on this
+   
+3. I tried hard to understand this but i did not succeed. My way of understanding may be wrong, so I need some guidance on this
 
 
 # **Coding standards which I followed**
 
-1. Class structure with static methods - Did not go with instance approach to make the functions to use as utility methods
+1. Class structure with static methods - Did not go with instance method approach to make the functions to use as utility methods
 2. Followed type hints and variable annotation and used **Typing** module to denote more advanced datatypes
 3. Doc strings and appropriate comments added
 4. Used **mypy** package to check the static typing in the code
-5. Unit tests added for various sample data along with original json (I recommend pytest instead unittest because we can have good fixture control which reduces the redundancy in code)
+5. Unit tests added for various sample data along with original json (I recommend pytest instead of unittest because we can have good fixture control which reduces the redundancy in code)
 6. I prepared some input data for unit testing, please ignore if that is not a correct input
+7. Pandas vs Numppy - need to explain
