@@ -132,7 +132,7 @@ class DriverDemand:
                 if pedal_type == 'Brake':
                     # developer note: ToDo
                     # Confused with 'helpers.sqt.timeEqual()' method
-                    # The below statements are ot clear, the returned parameter are hard coded to zero
+                    # The below statements are not clear, for time being the returned parameter are hard coded to zero
                     # I need some support on this
 
                     # Get seat rail accel at start of event
@@ -186,7 +186,17 @@ class DriverDemand:
 
         # find the signal difference
         delta_data_evt = data_evt.diff()
-        delta_data_evt = delta_data_evt.replace(np.nan, 0)
+        #delta_data_evt = delta_data_evt.replace(np.nan, 0)
+        # remove the first nan element
+        delta_data_evt = delta_data_evt[1:]
+        # append 0 at end of the series
+        delta_data_evt = delta_data_evt.append(pd.Series([0.0]))
+
+        # Get index info and adjust the series indices
+        indices = [i for i in delta_data_evt.index]
+        first_index = indices[0]
+        last_index = indices[-2]
+        delta_data_evt = pd.Series(delta_data_evt.values, index = [index for index in range(first_index-1, last_index+1)])
 
         # find the zero entries
         bool_zero = delta_data_evt == 0
@@ -230,6 +240,6 @@ class DriverDemand:
 
         # Find the position in the original time series
         bool_time_pedal = time_pedal >= t
-        p = bool_time_pedal[bool_time_pedal == True].last_valid_index()
+        p = bool_time_pedal[bool_time_pedal == True].first_valid_index()
 
         return p

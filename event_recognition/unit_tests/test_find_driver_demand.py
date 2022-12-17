@@ -30,8 +30,7 @@ class TestDriverDemand(unittest.TestCase):
 
         # set the data to the variable
         # output data
-        # self.t_expected_output = json_data_dict['t']
-        self.t_expected_output = 26.8515
+        self.t_expected_output = json_data_dict['t']
         self.type_expected_output = json_data_dict['type']
         self.status_expected_output = json_data_dict['status']
 
