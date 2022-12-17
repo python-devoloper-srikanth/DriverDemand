@@ -12,7 +12,7 @@ from event_recognition.utility import *
 
 def driver_demand_for_acc_brake_pedals() -> Tuple[Optional[float], Optional[str], Optional[str]]:
     """
-    Returns:
+    Method prints a list of events where the brake pedal was Zero and the driver Lifted off the accelerator pedal.
     """
     # Navigate to the i/o file - 'get_driver_demand.json'
     driver_demand_file_path = os.path.join(get_input_data_directory_path(), 'get_driver_demand.json')
