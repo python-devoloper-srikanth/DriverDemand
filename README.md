@@ -17,20 +17,24 @@ i.e., return a list of events where the brake pedal was 'Zero' and the driver 'L
 ### **Execution steps for the given solution**
 
 Please follow the below steps to clone and execute,
-1. (git bash in working directory)Clone the bundle to local -  **git clone DriverDemand.bundle DriverDemand** 
+1. Download the attached bundle (DriverDemand.bundle) to working directory and git bash here
+
+    Clone the bundle to local using the below command
+    
+    **git clone DriverDemand.bundle DriverDemand** 
      
     **OR**
 
     Download and extract the folder (in working directory) - DriverDemand.7z
     
-4. Set up environment (Pycharm or VS code)
+3. Set up environment (Pycharm or VS code)
     1. Load the project folder (DriverDemand) 
     2. Create a virtual environment
     3. Install packages which are there in requirements.txt - **pip install -r requirements.txt**
   
-5. Run the **main.py** (DriverDemand/event_recognition/main.py)
+4. Run the **main.py** (DriverDemand/event_recognition/main.py)
 
-6. Run the unitest with the below command
+5. Run the unitest with the below command
    1. python -m unittest event_recognition\unit_tests\test_find_driver_demand.py
             
       **OR**
