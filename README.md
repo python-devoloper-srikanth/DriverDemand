@@ -14,17 +14,20 @@ i.e., return a list of events where the brake pedal was 'Zero' and the driver 'L
 5. Use Pandas.Series to represent time-based signals (e.g. accelerator pedal, brake pedal)  **- DONE**
 
 # **Execution steps for the given solution**
-1. clone the code to local machine (Folder structure -> DriverDemand/event_recogniton)
-2. create a virtual environment using below command (in DriverDemand fold)
 
-       $ virtualenv -p python3 venv
-3. activate the virtual enironment with below command
-        
-       $ source venv/bin/activate
-4. Install packages using requirements.txt file
+Please follow the below steps to clone and execute,
+1. Clone the bundle to local -  git clone DriverDemand.bundle DriverDemand 
+     
+    **OR**
 
-       $ pip3 install -r requirements.txt
-5. Run the **main.py** 
+    Extract the downloaded folder - DriverDemand.7z
+    
+4. Set up environment (Pycharm or VS code)
+    1. Load the project folder (DriverDemand) 
+    2. Create a virtual environment
+    3. Install packages which are there in requirements.txt - **pip install -r requirements.txt**
+  
+5. Run the **main.py**
 
 # **Challenges in understanding given problem**
 

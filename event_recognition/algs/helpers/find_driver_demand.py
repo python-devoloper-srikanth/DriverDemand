@@ -19,7 +19,7 @@ class DriverDemand:
                            time_start: float, t_seat_rail_acc_filter: pd.Series,
                            seat_rail_acc_filter: pd.Series) -> Tuple[Optional[float], Optional[str], Optional[str]]:
         """
-        
+        returns a list of events for the given conditions
         Args:
             end_type:  = find either the first or last driver demand
             time_type:  = find either the start time or the end time of the change
@@ -173,26 +173,30 @@ class DriverDemand:
     @staticmethod
     def find_delta_time(type_: str, time_pedal: pd.Series,
                         data_pedal: pd.Series, time_start: float, tolerance: float) -> Optional[int]:
+        """
+        Finds the position in the original time series
+        """
 
-        # 1. get the events greater than or equal to given time start
+        # get the events greater than or equal to given time start
         bool_evt = time_pedal >= time_start
 
         if bool_evt.any() == False:
             return None
 
-        # 1. take only the events and data greater than or equal to given time start
+        # take only the events and data greater than or equal to given time start
         data_evt = data_pedal.loc[bool_evt]
         time_evt = time_pedal.loc[bool_evt]
 
         # find the signal difference
         delta_data_evt = data_evt.diff()
-        #delta_data_evt = delta_data_evt.replace(np.nan, 0)
+        # pandas series diff function keeping nan as first element after the execution to maintain the same size
+        # So we need t remove the first element and dd 0.0 atr last of series and maintain the indexing
         # remove the first nan element
         delta_data_evt = delta_data_evt[1:]
         # append 0 at end of the series
         delta_data_evt = delta_data_evt.append(pd.Series([0.0]))
 
-        # Get index info and adjust the series indices
+        # Get index info and adjust the series indices (to maintain the same indices)
         indices = [i for i in delta_data_evt.index]
         first_index = indices[0]
         last_index = indices[-2]
