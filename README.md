@@ -16,7 +16,7 @@ i.e., return a list of events where the brake pedal was 'Zero' and the driver 'L
 # **Execution steps for the given solution**
 
 Please follow the below steps to clone and execute,
-1. Clone the bundle to local -  git clone DriverDemand.bundle DriverDemand 
+1. Clone the bundle to local -  **git clone DriverDemand.bundle DriverDemand** 
      
     **OR**
 
