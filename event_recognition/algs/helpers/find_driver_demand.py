@@ -192,9 +192,9 @@ class DriverDemand:
         # pandas series diff function keeping nan as first element after the execution to maintain the same size
         # So we need t remove the first element and dd 0.0 atr last of series and maintain the indexing
         # remove the first nan element
-        delta_data_evt = delta_data_evt[1:]
+        delta_data_evt = delta_data_evt.iloc[1:]
         # append 0 at end of the series
-        delta_data_evt = delta_data_evt.append(pd.Series([0.0]))
+        delta_data_evt = pd.concat([delta_data_evt, pd.Series([0.0])])
 
         # Get index info and adjust the series indices (to maintain the same indices)
         indices = [i for i in delta_data_evt.index]

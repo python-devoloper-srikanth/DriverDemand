@@ -13,11 +13,19 @@ from event_recognition.utility import *
 class TestDriverDemand(unittest.TestCase):
 
     def setUp(self) -> None:
+        """
+        This method gets called before every uni test runs
+        The below instance variable are filled from the corresponding json file and compared to the processed data
+        """
         self.t_expected_output = None
         self.type_expected_output = None
         self.status_expected_output = None
 
     def tearDown(self) -> None:
+        """
+        This method gets called after every unit test runs
+        So writing these assert conditions in this place
+        """
         self.assertEqual(self.t, self.t_expected_output)
         self.assertEqual(self.type, self.type_expected_output)
         self.assertEqual(self.status, self.status_expected_output)
